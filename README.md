@@ -88,7 +88,7 @@
  
 - 支持修改`SUSFS`哈希值进行回退、支持调用`SUSFS-DEV`开发分支  
  
-- 内核版本为``6.6-6.12``支持将设备树中的`type`属性从`HMBIRD_OGKI`替换为`HMBIRD_GKI`,直接使用官方`dtbo`就可以直接开机;支持开启风驰驱动[@reigadegr](https://github.com/reigadegr) [@cctv18](https://github.com/cctv18) [@Numbersf](https://github.com/Numbersf) [@HanKuCha](https://github.com/HanKuCha)  
+- 内核版本为``6.6-6.12``支持将设备树中的`type`属性从`HMBIRD_OGKI`替换为`HMBIRD_GKI`;支持开启风驰驱动[@reigadegr](https://github.com/reigadegr) [@cctv18](https://github.com/cctv18) [@Numbersf](https://github.com/Numbersf) [@HanKuCha](https://github.com/HanKuCha)  
  
 - 允许调用第三方动态源码清单仓库,以支持原本不兼容的机型。必须确保源码清单与频道分支的命名符合规范。在第三方清单仓库的`README.md`中,如未定义`CPUD`,可填写任意占位值。此外,极速构建必须保持启用,不可关闭  
  
