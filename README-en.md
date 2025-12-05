@@ -88,7 +88,7 @@
  
 - Supports modifying the `SUSFS` hash for rollback and supports using the `SUSFS-DEV` development branch.
  
-- For kernel versions `6.6–6.12`, supports replacing the `type` property in the device tree from `HMBIRD_OGKI` to `HMBIRD_GKI`, allowing the device to boot directly using the official `dtbo`; supports enabling WindSpeed Driver[@reigadegr](https://github.com/reigadegr) [@cctv18](https://github.com/cctv18) [@Numbersf](https://github.com/Numbersf) [@HanKuCha](https://github.com/HanKuCha)  
+- For kernel versions `6.6–6.12`, supports replacing the `type` property in the device tree from `HMBIRD_OGKI` to `HMBIRD_GKI`, allowing the device to boot directly using the official `dtbo`; supports enabling Fengchi Driver[@reigadegr](https://github.com/reigadegr) [@cctv18](https://github.com/cctv18) [@Numbersf](https://github.com/Numbersf) [@HanKuCha](https://github.com/HanKuCha)  
  
 - Allow calling third-party dynamic source manifest repositories to support originally incompatible devices. It is essential to ensure that the naming of the source manifest and channel branches complies with the specifications. In the third-party manifest repository's `README.md`, if `CPUD` is not defined, any placeholder value can be used,the fast build feature must remain enabled and cannot be disabled.  
  

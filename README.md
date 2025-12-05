@@ -155,5 +155,5 @@ AnyKernel3_SukiSUUltra_12896_oneplus_11_Android14.1.0_KPM_VFS.zip
  
 - 添加 `zram` 模块的 `LZ4K、LZ4KD` 压缩算法支持[@ShirkNeko](https://github.com/ShirkNeko)  
  
-- 支持自动下载最新 `CI/Release` 的 `susfs` 模块并调用 `ksud` 安装、自动获取不同种类管理器`CI-APK`解压到`Anykernel3`但不安装  
+- 支持自动下载最新 `CI/Release` 的 `susfs` 模块并调用 `ksud` 安装、自动获取不同类型的管理器`CI-APK`解压到`Anykernel3`但不安装  
  
