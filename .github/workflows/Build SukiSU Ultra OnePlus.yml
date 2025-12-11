@@ -997,8 +997,11 @@ jobs:
               exit 1
             fi
           fi
-          cp "$image_path" ./AnyKernel3/Image
-          cp "$image_path" kernel_workspace/kernel_platform/out/Final-Image-Find/Image
+          if [ -n "$image_path" ] && [ -f "$image_path" ]; then
+            echo "Image file finally located at: $image_path"
+            cp "$image_path" ./AnyKernel3/Image
+            cp "$image_path" kernel_workspace/kernel_platform/out/Final-Image-Find/Image
+          fi
 
       - name: Apply patch_linux and Replace Image
         if: ${{ github.event.inputs.KPM == 'true' }}
