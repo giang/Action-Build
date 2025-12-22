@@ -675,19 +675,20 @@ jobs:
             patch -p1 < fix_5.15.legacy.patch
             echo "fix_5.15_patch完成"
           fi
-          TRUSTY_EXISTS="false"
-          if [[ "${{ env.KERNEL_VERSION }}" == "6.6" ]]; then
+
+          if [[ "${{ env.KV2 }}" == "66" && "${{ env.KV3 }}" -le 6630 && "${{ github.event.inputs.SUSFS_META }}" != "-1" ]]; then
+            TRUSTY_EXISTS="false"
             if grep -q 'common-modules/trusty' "$GITHUB_WORKSPACE/.repo/manifests_fallback/${FILE}.xml"; then
               TRUSTY_EXISTS="true"
             fi
             echo "trusty_exists=$TRUSTY_EXISTS" >> $GITHUB_OUTPUT
-
-            if [[ "$TRUSTY_EXISTS" == "false" && "${{ env.KV2 }}" == "66" && "${{ env.KV3 }}" -le 6630 && "${{ github.event.inputs.SUSFS_META }}" != "-1" ]]; then
+            if [[ "$TRUSTY_EXISTS" == "false" ]]; then
               echo "修复内核版本为6.6.0~6.6.30的机型源码及清单中缺失TrustyOS导致的susfs报错"
               sed -i 's/-32,12 +32,38/-32,11 +32,37/g' 50_add_susfs_in_gki-${{ env.KANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch
               sed -i '/#include <trace\/hooks\/fs.h>/d' 50_add_susfs_in_gki-${{ env.KANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch
             fi
           fi
+
           if [ "${{ github.event.inputs.SUSFS_META }}" != "-1" ]; then
             # Fake Patch to fix failures
             fake_patched=0
