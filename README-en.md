@@ -90,7 +90,7 @@
  
 - Initial release with support for a large number of `MTK` devices; manifest list and path issues have been successfully resolved.  
  
-- Supports modifying the `SUSFS` hash for rollback and supports using the `SUSFS-DEV` development branch.  
+- Supports modifying the `SUSFS` hash for rollback(Entering `-1` in this field will disable `SUSFS`)、Using the `SUSFS-DEV` development branch.  
  
 - For kernel versions `6.6–6.12`, supports replacing the `type` property in the device tree from `HMBIRD_OGKI` to `HMBIRD_GKI`; supports enabling Fengchi Driver[@reigadegr](https://github.com/reigadegr) [@cctv18](https://github.com/cctv18) [@Numbersf](https://github.com/Numbersf) [@HanKuCha](https://github.com/HanKuCha)  
  

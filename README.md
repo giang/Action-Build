@@ -90,7 +90,7 @@
  
 - 首发新增支持大量`MTK`机型,清单和路径问题成功被攻克  
  
-- 支持修改`SUSFS`哈希值进行回退、支持调用`SUSFS-DEV`开发分支  
+- 支持修改`SUSFS`哈希值进行回退(此项输入`-1`则关闭`SUSFS`)、调用`SUSFS-DEV`开发分支  
  
 - 内核版本为``6.6-6.12``支持将设备树中的`type`属性从`HMBIRD_OGKI`替换为`HMBIRD_GKI`;支持开启风驰驱动[@reigadegr](https://github.com/reigadegr) [@cctv18](https://github.com/cctv18) [@Numbersf](https://github.com/Numbersf) [@HanKuCha](https://github.com/HanKuCha)  
  
