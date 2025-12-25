@@ -23,14 +23,10 @@ on:
           - oneplus_pad_mt6983_v
           - oneplus_ace2v_v
           - oneplus_ace_pro_v
-          - oneplus_11_v
           - oneplus_11_b
-          - oneplus_12r_v
           - oneplus_12r_b
-          - oneplus_ace2_pro_v
-          - oneplus_ace3_v
+          - oneplus_ace2_pro_b
           - oneplus_ace3_b
-          - oneplus_open_v
           - oneplus_open_b
           - oneplus_12_b
           - oneplus_pad_mt6897_v
@@ -48,7 +44,7 @@ on:
           - oneplus_pad_2_pro_b
           - oneplus_pad_3_b
           - oneplus_ace5_race_b
-          - oneplus_ace5_ultra
+          - oneplus_ace5_ultra_b
           - oneplus_pad2_mt6991_b
           - oneplus_ace_6
           - oneplus_ace_6t
@@ -85,7 +81,7 @@ on:
         type: string
         description: "自定义构建时间(输入F使用当前UTC时间)"
         required: false
-        default: "Mon Aug 18 09:30:24 UTC 2025"
+        default: "Thu Dec 11 04:17:27 UTC 2025"
       KSU_META:
         type: string
         description: "分支名(必填)/自定义版本标识(留空不修改)/回退分支提交哈希版本(留空不修改)"
