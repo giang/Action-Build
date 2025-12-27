@@ -77,7 +77,7 @@ on:
         type: string
         description: "动态清单仓库所有者"
         required: true
-        default: "Numbersf"
+        default: "OnePlusOSS"
       BUILD_TIME:
         type: string
         description: "自定义构建时间(输入F使用当前UTC时间)"
