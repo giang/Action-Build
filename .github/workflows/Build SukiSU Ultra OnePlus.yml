@@ -1035,6 +1035,10 @@ jobs:
         run: |
           git clone https://github.com/Numbersf/AnyKernel3 --depth=1
           rm -rf ./AnyKernel3/.git
+          # If we have a fallback anykernel script in the repo, overwrite the cloned one to avoid regressions
+          if [ -f "${GITHUB_WORKSPACE}/packaging/anykernel_fallback/anykernel.sh" ]; then
+            cp "${GITHUB_WORKSPACE}/packaging/anykernel_fallback/anykernel.sh" ./AnyKernel3/anykernel.sh || true
+          fi
           mkdir -p kernel_workspace/kernel_platform/out/Final-Image-Find/
           image_path=$(find "./kernel_workspace/kernel_platform/common/out/" -name "Image" | head -n 1)
           if [ -n "$image_path" ]; then
