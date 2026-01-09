@@ -132,6 +132,11 @@ on:
         description: "是否添加更多ZRAM算法？"
         required: true
         default: false
+      XUS_FIX:
+        type: boolean
+        description: "是否阻止5US报错文件产生？"
+        required: true
+        default: false
       SUSFS_DEV:
         type: boolean
         description: "是否拉取SUSFS-DEV分支？"
@@ -309,6 +314,7 @@ jobs:
           echo "Selected FAST_BUILD: ${{ github.event.inputs.FAST_BUILD }}"
           echo "Selected SCHED: ${{ github.event.inputs.SCHED }}"
           echo "Selected ZRAM: ${{ github.event.inputs.ZRAM }}"
+          echo "Selected XUS_FIX: ${{ github.event.inputs.XUS_FIX }}"
           echo "-----------------------"
 
       - name: Check Disk Space
@@ -714,6 +720,10 @@ jobs:
                 fi
               fi
             fi
+            if [ "${{ github.event.inputs.SUSFS_META }}" != "-1" ] && [ "${{ github.event.inputs.XUS_FIX }}" = "true" ]; then
+              cp ../../Action-Build/patches/No_5uS.patch ./
+              patch -p1 < No_5uS.patch || true
+            fi    
           fi
 
       # OGKI转换GKI，无需修改 dtbo 开机
