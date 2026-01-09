@@ -8,6 +8,7 @@
 **```Build All OnePlus Devices SukiSU Ultra Kernel```**
 >更高效 更全面 更快速 更稳定
  
+禁止宣传**没有任何修改**的`fork`仓库，详见[LICENSE](LICENSE)
 <details>
 <summary><strong>点击查看如何fork项目</strong></summary>
 <img src="https://github.com/Numbersf/Action-Build/blob/SukiSU-Ultra/pic/make.gif" width="500"/>

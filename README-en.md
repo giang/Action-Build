@@ -8,6 +8,7 @@
 **```Build All OnePlus Devices SukiSU Ultra Kernel```**
 > More efficient · More comprehensive · More Faster · More stable
  
+Prohibit the promotion of forked repositories with **no modifications**; see [LICENSE](LICENSE)
 <details>
 <summary><strong>Click to view how to fork the project</strong></summary>
 <img src="https://github.com/Numbersf/Action-Build/blob/SukiSU-Ultra/pic/make.gif" width="500"/>
