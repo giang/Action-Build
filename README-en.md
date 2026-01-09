@@ -87,8 +87,6 @@ Prohibit the promotion of forked repositories with **no modifications**; see [LI
 # Changelog
 > Minor updates will be ignored. For more details, please refer to the commit.
  
-- Added `Unicode` zero-width bypass fix(prevents app package-name checks involving zero-width spaces and mitigates some related vulnerabilities)、memory optimization patches.  
- 
 - Initial release with support for a large number of `MTK` devices; manifest list and path issues have been successfully resolved.  
  
 - Supports modifying the `SUSFS` hash for rollback(Entering `-1` in this field will disable `SUSFS`)、Using the `SUSFS-DEV` development branch.  
