@@ -218,9 +218,9 @@ jobs:
             local REPO_URL=$2
 
             echo "🌐 尝试拉取 ${OWNER} 分支列表..."
-            BRANCHES=$(curl -s ${REPO_URL}/branches | jq -r '.[].name' || true)
+            BRANCHES=$(curl -fsL ${REPO_URL}/branches | jq -r 'if type=="array" then .[].name else empty end' 2>/dev/null || true)
             if [[ -z "$BRANCHES" ]]; then
-              echo "⚠️ ${OWNER} 分支列表获取失败，跳过。"
+              echo "⚠️ ${OWNER} 分支列表获取失败，请尝试重新运行工作流。"
               return 1
             fi
             for BRANCH in $BRANCHES; do
