@@ -74,7 +74,7 @@ on:
         type: choice
         description: "内核模块实现方式"
         required: true
-        default: NoN
+        default: KPM
         options:
           - KPM
           - KPN
