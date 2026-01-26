@@ -735,7 +735,7 @@ jobs:
             if [ "${{ github.event.inputs.SUSFS_META }}" != "-1" ] && [ "${{ github.event.inputs.XUS_FIX }}" = "true" ]; then
               cp ../../Action-Build/patches/No_5uS.patch ./
               patch -p1 < No_5uS.patch || true
-            fi    
+            fi
           fi
 
       # OGKI转换GKI，无需修改 dtbo 开机
