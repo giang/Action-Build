@@ -5,13 +5,14 @@
 <img align="right" src="pic/zakozako~.svg" width="100px" alt="zakozako~">
  
 # Action-Build
-**```Build All OnePlus Devices SukiSU Ultra Kernel```**
+**```Build Kernels for All OnePlus Devices```**
 > More efficient · More comprehensive · More Faster · More stable
  
 Prohibit the promotion of forked repositories with **no modifications**; see [LICENSE](LICENSE)
 <details>
 <summary><strong>Click to view how to fork the project</strong></summary>
 <img src="https://github.com/Numbersf/Action-Build/blob/SukiSU-Ultra/pic/make.gif" width="500"/>
+<summary>Please note, if you want to use other branch manager projects, make sure to disable 'Copy only the SukiSU Ultra branch' when forking.</summary>
 </details>
  
 <details>
@@ -151,9 +152,9 @@ When there is a kernel-level update or a significant slowdown caused by changes 
  
 - Removed potential version codes from the suffix of `Anykernel3.zip` config file, replaced with exact `Android` version numbers `XX.X.X`.
 ```
-AnyKernel3_SukiSUUltra_12896_oneplus_ace2pro_Android15.0.0_KPM_VFS.zip
-AnyKernel3_SukiSUUltra_12896_oneplus_13_Android15.0.2_KPM_VFS.zip
-AnyKernel3_SukiSUUltra_12896_oneplus_11_Android14.1.0_KPM_VFS.zip
+AnyKernel3_SukiSUUltra_12896_OnePlusAce2Pro_Android15.0.0_KPM_VFS.zip
+AnyKernel3_SukiSUUltra_12896_OnePlus13_Android15.0.2_KPM_VFS.zip
+AnyKernel3_SukiSUUltra_12896_OnePlus11_Android14.1.0_KPM_VFS.zip
 ```  
  
 - Added support for the `LZ4K、LZ4KD` compression algorithm in the `zram` module.   [@ShirkNeko](https://github.com/ShirkNeko)  
