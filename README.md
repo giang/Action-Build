@@ -76,7 +76,7 @@
 >
 >``OnePlus Ace5``不支持开启风驰,较老的机型即使内核加入也无法使用,不要勉强  
 >
->``CAll Build Start UP``是一个极其危险的新工作流文件,**它没有新功能且一切保持默认不可自定义**,新工作流**禁止**普通用户使用!普通用户请使用``Build OnePlus_SukiSU Ultra All``!  
+>``CAll Build Start UP``是一个极其危险的新工作流文件,**它没有新功能且一切保持默认不可自定义**,新工作流**禁止**普通用户使用!普通用户请使用``Build All OnePlus Kernels``!  
 >
  
 ------
