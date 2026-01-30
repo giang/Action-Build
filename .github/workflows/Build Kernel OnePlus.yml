@@ -137,7 +137,7 @@ on:
         type: boolean
         description: "是否添加风驰驱动1.0？"
         required: true
-        default: true
+        default: false
       ZRAM:
         type: boolean
         description: "是否添加更多ZRAM算法？"
