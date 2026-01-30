@@ -56,10 +56,11 @@ on:
         type: choice
         description: "管理器调用方向"
         required: true
-        default: OFFICIAL
+        default: MIUIX
         options:
-          - OFFICIAL
-          - SPOOF
+          - MIUIX
+          - MD3
+          - MD3_SPOOF
       SUSFS_CI:
         type: choice
         description: "SUSFS模块下载调用方向"
@@ -1114,11 +1115,15 @@ jobs:
         run: |
           MANAGER_SOURCE="${{ github.event.inputs.MANAGER_SOURCE }}"
           case "$MANAGER_SOURCE" in
-            SPOOF)
-              BRANCH="main"
+            MD3)
+              BRANCH="old"
+              ARTIFACT_NAME="Manager"
+              ;;
+            MD3_SPOOF)
+              BRANCH="old"
               ARTIFACT_NAME="Spoofed-Manager"
               ;;
-            OFFICIAL|*)
+            MIUIX|*)
               BRANCH="main"
               ARTIFACT_NAME="Manager"
               ;;
