@@ -60,7 +60,6 @@ on:
         options:
           - OFFICIAL
           - SPOOF
-          - MIUIX
       SUSFS_CI:
         type: choice
         description: "SUSFS模块下载调用方向"
@@ -1115,10 +1114,6 @@ jobs:
         run: |
           MANAGER_SOURCE="${{ github.event.inputs.MANAGER_SOURCE }}"
           case "$MANAGER_SOURCE" in
-            MIUIX)
-              BRANCH="miuix"
-              ARTIFACT_NAME="Manager"
-              ;;
             SPOOF)
               BRANCH="main"
               ARTIFACT_NAME="Spoofed-Manager"
