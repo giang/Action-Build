@@ -117,7 +117,7 @@ on:
         type: boolean
         description: "是否启用关键分区写入保护模块(BBG)？"
         required: true
-        default: false
+        default: true
       NETFILTER:
         type: boolean
         description: "是否启用网络功能拓展(NETFILTER)？"
@@ -127,17 +127,17 @@ on:
         type: boolean
         description: "是否启用网络优化算法(BBR+ECN)？"
         required: true
-        default: true
+        default: false
       UNICODE_BYPASS:
         type: boolean
         description: "是否添加Unicode不可见字码点绕过读取漏洞修复？"
         required: true
-        default: false
+        default: true
       SCHED:
         type: boolean
         description: "是否添加风驰驱动1.0？"
         required: true
-        default: false
+        default: true
       ZRAM:
         type: boolean
         description: "是否添加更多ZRAM算法？"
