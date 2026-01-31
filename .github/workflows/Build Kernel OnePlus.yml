@@ -59,6 +59,7 @@ on:
         default: MIUIX
         options:
           - MIUIX
+          - MIUIX_SPOOF
           - MD3
           - MD3_SPOOF
       SUSFS_CI:
@@ -576,6 +577,10 @@ jobs:
               ;;
             MD3_SPOOF)
               BRANCH="old"
+              ARTIFACT="Spoofed-Manager"
+              ;;
+            MIUIX_SPOOF)
+              BRANCH="main"
               ARTIFACT="Spoofed-Manager"
               ;;
             MIUIX|*)
