@@ -50,7 +50,7 @@ on:
           - oneplus_pad2_mt6991_b
           - oneplus_ace_6
           - oneplus_ace_6t
-          - oneplus_ace_6t_aoap
+          - oneplus_ace_6t_aosp
           - oneplus_15r
           - oneplus_15r_aosp
           - oneplus_15
