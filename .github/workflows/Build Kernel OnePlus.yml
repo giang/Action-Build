@@ -1024,6 +1024,9 @@ jobs:
 
           # 从 build.config.common 读取 CLANG_PREBUILT_BIN
           CLANG_PREBUILT_BIN=$(grep '^CLANG_PREBUILT_BIN=' ./common/build.config.common | cut -d'=' -f2 || true)
+          if [[ "${CPU}" == sm8845 ]]; then
+            CLANG_PREBUILT_BIN=$(grep '^CLANG_PREBUILT_BIN=' ./soc-repo/build.config.common | cut -d'=' -f2 || true)
+          fi
           if [[ -z "$CLANG_PREBUILT_BIN" ]]; then
             echo "⚠️ CLANG_PREBUILT_BIN 未在 build.config.common 中找到，回退至官方构建脚本"
             echo "fallback=true" >> "$GITHUB_OUTPUT"
