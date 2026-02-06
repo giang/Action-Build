@@ -1063,13 +1063,14 @@ jobs:
               RUSTC_VERSION="$RUSTC_NEW_VERSION"
             fi
           fi
-          RUSTC_BIN="$(pwd)/prebuilts/rust/linux-x86/$RUSTC_VERSION/bin/rustc"
 
+          echo "----------------"
           echo "✅ CLANG_VERSION=$CLANG_VERSION"
           echo "✅ CLANG_DIR=$CLANG_DIR"
           echo "✅ CLANG_PATH=$CLANG_PATH"
           echo "✅ USE_LLVM_IAS=$USE_LLVM_IAS"
           echo "✅ RUSTC_VERSION=$RUSTC_VERSION"
+          echo "----------------"
 
           export PATH="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/$CLANG_PREBUILT_BIN:$PATH"
           export PATH="/usr/lib/ccache:$PATH"
@@ -1082,7 +1083,7 @@ jobs:
             LLVM=1
             ARCH=arm64
             CROSS_COMPILE=aarch64-linux-gnu-
-            RUSTC=$RUSTC_BIN
+            RUSTC=../../prebuilts/rust/linux-x86/$RUSTC_VERSION/bin/rustc
             PAHOLE=../../prebuilts/kernel-build-tools/linux-x86/bin/pahole
             LD=ld.lld
             HOSTLD=ld.lld
