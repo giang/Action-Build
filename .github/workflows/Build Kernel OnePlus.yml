@@ -1258,7 +1258,7 @@ jobs:
         id: zram_find
         run: |
           set -e
-          ZRAM_ZIP="./Action-Build/ZRAM.zip"
+          ZRAM_ZIP="${GITHUB_WORKSPACE}/kernel_workspace/Action-Build/ZRAM.zip"
 
           if [ ! -f "$ZRAM_ZIP" ]; then
             echo "❌ 未找到 ZRAM.zip: $ZRAM_ZIP"
