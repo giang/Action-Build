@@ -1103,6 +1103,10 @@ jobs:
           echo "✅ USE_LLVM_IAS=$USE_LLVM_IAS"
           echo "-----------------------"
 
+          set +u
+          source "$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/build/kernel/_setup_env.sh" 2>/dev/null || true
+          set -u
+
           export PATH="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/$CLANG_PREBUILT_BIN:$PATH"
           export PATH="/usr/lib/ccache:$PATH"
           export CC="ccache clang"
@@ -1110,10 +1114,6 @@ jobs:
             export BINDGEN="bindgen"
             export LIBCLANG_PATH="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/$(dirname "$CLANG_PREBUILT_BIN")/lib"
           fi
-
-          set +u
-          source "$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/build/kernel/_setup_env.sh" 2>/dev/null || true
-          set -u
 
           cd ./common
           MAKE_ARGS=(
