@@ -1086,15 +1086,20 @@ jobs:
             RUSTC_VERSION=$(grep '^RUSTC_VERSION=' ./common/build.config.constants | cut -d'=' -f2 || true)
           fi
           if [[ -n "$RUSTC_VERSION" ]]; then
-            echo "✅ Found RUSTC_VERSION=$RUSTC_VERSION"
+            echo "✅ RUSTC_VERSION=$RUSTC_VERSION"
             echo "RUSTC_VERSION=$RUSTC_VERSION" >> $GITHUB_ENV
             ENABLE_RUST=true
             echo "ENABLE_RUST=true" >> $GITHUB_ENV
           else
-            echo "ℹ️ No RUSTC_VERSION found, skip Rust toolchain setup"
+            echo "✅ RUSTC_VERSION 未找到，Rust 编译已禁用"
             ENABLE_RUST=false
             echo "ENABLE_RUST=false" >> $GITHUB_ENV
           fi
+
+          # 重映射物理路径
+          MAP="-fdebug-prefix-map=${GITHUB_WORKSPACE}=."
+          MPMAP="-fmacro-prefix-map=${GITHUB_WORKSPACE}=."
+          FPMAP="-ffile-prefix-map=${GITHUB_WORKSPACE}=."
 
           echo "-----------------------"
           echo "✅ CLANG_VERSION=$CLANG_VERSION"
@@ -1123,6 +1128,7 @@ jobs:
             PAHOLE=../../prebuilts/kernel-build-tools/linux-x86/bin/pahole
             LD=ld.lld
             HOSTLD=ld.lld
+            KCFLAGS+="$MAP $MPMAP $FPMAP"
             KCFLAGS+=-Wno-error
             KCFLAGS+=-D__ANDROID_COMMON_KERNEL__
           )
