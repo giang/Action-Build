@@ -340,7 +340,7 @@ jobs:
 
       - name: Debug Show Selected Inputs
         run: |
-          echo "-----------------------"
+          echo "------------------------------"
           echo "Selected CPU: ${{ env.CPU }}"
           echo "Selected CPUD: ${{ env.CPUD }}"
           echo "Selected ANDROID_VERSION: ${{ env.ANDROID_VERSION }}"
@@ -366,7 +366,7 @@ jobs:
           echo "Selected SCHED: ${{ github.event.inputs.SCHED }}"
           echo "Selected UNICODE_BYPASS: ${{ github.event.inputs.UNICODE_BYPASS }}"
           echo "Selected XUS_FIX: ${{ github.event.inputs.XUS_FIX }}"
-          echo "-----------------------"
+          echo "------------------------------"
 
       - name: Check Disk Space
         run: df -h
@@ -1117,7 +1117,6 @@ jobs:
           export PATH="/usr/lib/ccache:$PATH"
           export CC="ccache clang"
           export BINDGEN="bindgen"
-          sudo apt install -y libelf-dev ccache
 
           cd ./common
           MAKE_ARGS=(
@@ -1159,18 +1158,18 @@ jobs:
           mkdir -p kernel_workspace/kernel_platform/out/Final-Image-Find/
           image_path=$(find "./kernel_workspace/kernel_platform/common/out/" -name "Image" | head -n 1)
           if [ -n "$image_path" ]; then
-            echo "使用 make 编译的统一路径，成功找到 Image 文件"
+            echo "✅ 使用 make 编译的统一路径，成功找到 Image 文件"
           else
             image_path=$(find "./kernel_workspace/kernel_platform/out/" -name "Image" | head -n 1)
             if [ -n "$image_path" ]; then
-              echo "使用官方脚本编译，成功找到 Image 文件"
+              echo "✅ 使用官方脚本编译，成功找到 Image 文件"
             else
-              echo "未找到 Image 文件，构建失败" >&2
+              echo "❌ 未找到 Image 文件，构建失败" >&2
               exit 1
             fi
           fi
           if [ -n "$image_path" ] && [ -f "$image_path" ]; then
-            echo "Image file finally located at: $image_path"
+            echo "✅ Image file finally located at: $image_path"
             cp "$image_path" ./AnyKernel3/Image
             cp "$image_path" kernel_workspace/kernel_platform/out/Final-Image-Find/Image
           fi
@@ -1253,7 +1252,7 @@ jobs:
           name: AnyKernel3_SukiSUUltra_${{ env.KSUVER }}_${{ steps.extract_info.outputs.value }}(${{ env.TKERNEL_VERSION }})${{ steps.suffix.outputs.value }}
           path: ./AnyKernel3/*
 
-      - name: Download and Unzip ZRAM
+      - name: Extract and Process ZRAM Module
         if: startsWith(github.event.inputs.ZRAM, '1/')
         id: zram_find
         run: |
@@ -1289,22 +1288,19 @@ jobs:
           )
           zram_path=""
           for path in "${search_paths[@]}"; do
-            zram_path=$(find "$path" -type f -name "zram.ko" | head -n 1)
-            [ -n "$zram_path" ] && break
+            if [ -d "$path" ]; then
+              zram_path=$(find "$path" -type f -name "zram.ko" | head -n 1)
+              [ -n "$zram_path" ] && break
+            fi
           done
           if [ -z "$zram_path" ]; then
             zram_path=$(find "./kernel_workspace" -type f -name "zram.ko" | head -n 1)
           fi
           if [ -n "$zram_path" ] && [ -f "$zram_path" ]; then
-            echo "ZRAM module file finally located at: $zram_path"
-            mkdir -p "$(dirname "$target")"
-            if [ "$(realpath "$zram_path")" != "$(realpath "$target")" ]; then
-              cp "$zram_path" "$target"
-            else
-              echo "源文件与目标路径相同，跳过复制"
-            fi
+            echo "✅ zram.ko file finally located at: $zram_path"
+            install -D "$zram_path" "$target"
           else
-            echo "未找到 zram.ko 文件，可能是未支持的内核版本或者未成功构建"
+            echo "❌ 未找到 zram.ko 文件，可能是未支持的内核版本或构建失败"
             echo "upload=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
