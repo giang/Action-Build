@@ -398,7 +398,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ env.CCACHE_DIR }}
-          key: ccache-${{ runner.os }}-${{ github.ref_name }}-${{ github.event.inputs.FILE }}-${{ env.BUILD_METHOD }}-${{ github.event.inputs.FAST_BUILD == 'true' && 'alpha' || 'beta' }}-16
+          key: ccache-${{ runner.os }}-${{ github.ref_name }}-${{ github.event.inputs.FILE }}-${{ env.BUILD_METHOD }}-${{ github.event.inputs.FAST_BUILD == 'true' && 'alpha' || 'beta' }}-16.1
 
       - name: Initialize Ccache
         if: ${{ github.event.inputs.BUILD_NOCCACHE == 'false' }}
@@ -1096,11 +1096,6 @@ jobs:
             echo "ENABLE_RUST=false" >> $GITHUB_ENV
           fi
 
-          # 重映射物理路径
-          MAP="-fdebug-prefix-map=${GITHUB_WORKSPACE}=."
-          MPMAP="-fmacro-prefix-map=${GITHUB_WORKSPACE}=."
-          FPMAP="-ffile-prefix-map=${GITHUB_WORKSPACE}=."
-
           echo "-----------------------"
           echo "✅ CLANG_VERSION=$CLANG_VERSION"
           echo "✅ CLANG_DIR=$CLANG_DIR"
@@ -1114,20 +1109,28 @@ jobs:
 
           export PATH="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/$CLANG_PREBUILT_BIN:$PATH"
           export PATH="/usr/lib/ccache:$PATH"
-          export CC="ccache clang"
+
           if [[ "$ENABLE_RUST" == "true" ]]; then
             export BINDGEN="bindgen"
             export LIBCLANG_PATH="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/$(dirname "$CLANG_PREBUILT_BIN")/lib"
           fi
 
           cd ./common
+
+          # 重映射物理路径
+          MAP="-fdebug-prefix-map=${GITHUB_WORKSPACE}=."
+          MPMAP="-fmacro-prefix-map=${GITHUB_WORKSPACE}=."
+          FPMAP="-ffile-prefix-map=${GITHUB_WORKSPACE}=."
+
           MAKE_ARGS=(
             LLVM=1
             ARCH=arm64
             CROSS_COMPILE=aarch64-linux-gnu-
-            PAHOLE=../../prebuilts/kernel-build-tools/linux-x86/bin/pahole
+            CC="ccache clang"
+            HOSTCC="ccache clang"
             LD=ld.lld
             HOSTLD=ld.lld
+            PAHOLE=../../prebuilts/kernel-build-tools/linux-x86/bin/pahole
             KCFLAGS+="$MAP $MPMAP $FPMAP"
             KCFLAGS+=-Wno-error
             KCFLAGS+=-D__ANDROID_COMMON_KERNEL__
