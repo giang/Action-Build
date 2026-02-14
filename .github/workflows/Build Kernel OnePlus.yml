@@ -947,7 +947,9 @@ jobs:
 
           # IPSET & IPv6_NAT配置*
           if [[ "${CPU}" == sm* && "${{ github.event.inputs.NETFILTER }}" == "true" ]]; then
-            echo "CONFIG_BPF_STREAM_PARSER=y" >> "$CONFIG_FILE"
+            if [[ "$KERNEL_VERSION" != "6.12" ]]; then
+              echo "CONFIG_BPF_STREAM_PARSER=y" >> "$CONFIG_FILE"
+            fi
             echo "CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=y" >> "$CONFIG_FILE"
             echo "CONFIG_NETFILTER_XT_SET=y" >> "$CONFIG_FILE"
             echo "CONFIG_IP_SET=y" >> "$CONFIG_FILE"
