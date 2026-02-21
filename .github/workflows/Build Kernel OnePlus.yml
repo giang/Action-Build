@@ -439,7 +439,7 @@ jobs:
           repo init -u "$BASE_URL" -b "$MANIFEST_BRANCH" -m "${FILE}.xml" --depth=1 --no-clone-bundle --no-tags
           repo sync -c -j$(nproc) --no-clone-bundle --no-tags --force-sync
 
-          for dir in kernel_platform/common kernel_platform/msm-kernel; do
+          for dir in kernel_platform/common kernel_platform/$PATH_2; do
             if [ -e "$dir/BUILD.bazel" ]; then
               sed -i '/^[[:space:]]*"protected_exports_list"[[:space:]]*:[[:space:]]*"android\/abi_gki_protected_exports_aarch64",$/d' "$dir/BUILD.bazel"
             fi
@@ -522,7 +522,7 @@ jobs:
 
           for path in \
             kernel_platform/common/scripts/setlocalversion \
-            kernel_platform/msm-kernel/scripts/setlocalversion \
+            kernel_platform/$PATH_2/scripts/setlocalversion \
             kernel_platform/external/dtc/scripts/setlocalversion; do
 
             [ -f "$path" ] || continue
@@ -576,7 +576,7 @@ jobs:
 
           for path in \
             kernel_platform/common/scripts/setlocalversion \
-            kernel_platform/msm-kernel/scripts/setlocalversion \
+            kernel_platform/$PATH_2/scripts/setlocalversion \
             kernel_platform/external/dtc/scripts/setlocalversion; do
 
             [ -f "$path" ] || continue
@@ -1049,7 +1049,7 @@ jobs:
           echo "KBUILD_BUILD_TIMESTAMP=${DATESTR}" >> "$GITHUB_ENV"
           echo "KBUILD_BUILD_VERSION=1" >> "$GITHUB_ENV"
           cd kernel_workspace/kernel_platform/
-          for f in common/scripts/mkcompile_h msm-kernel/scripts/mkcompile_h; do
+          for f in common/scripts/mkcompile_h $PATH_2/scripts/mkcompile_h; do
             if [ -f "$f" ]; then
               echo "Patching mkcompile_h with BUILD_TIME=$DATESTR"
               if grep -q 'UTS_VERSION=' "$f"; then
