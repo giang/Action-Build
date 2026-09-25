@@ -804,7 +804,7 @@ jobs:
           KERNEL_ROOT: ${{ github.workspace }}/kernel_workspace/kernel_platform
         run: |
           set -euo pipefail
-          SHIM_URL="https://raw.githubusercontent.com/junhaoyyds/abk-susfs-sucompat-shim/58b77a71359b3bfe4608afcdb07d84268e896f11/setup.sh"
+          SHIM_URL="https://raw.githubusercontent.com/giang/abk-susfs-sucompat-shim/refs/heads/main/setup.sh"
           SHIM_PATH="$RUNNER_TEMP/susfs-sucompat-shim.sh"
           curl --fail --silent --show-error --location "$SHIM_URL" -o "$SHIM_PATH"
           chmod +x "$SHIM_PATH"
