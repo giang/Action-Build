@@ -1518,18 +1518,18 @@ jobs:
 
           MANAGER_BRANCH="${{ env.KSU_MANAGER_BRANCH }}"
           [ -z "$MANAGER_BRANCH" ] && MANAGER_BRANCH="main"
-
+      
           echo "🔍 Tìm kiếm CI Manager Run ID trên nhánh: $MANAGER_BRANCH..."
-
+      
           # 1. Lấy Run ID của lượt build CI thành công mới nhất dựa trên biến MANAGER_BRANCH
           RUN_ID=$(gh api "repos/SukiSU-Ultra/SukiSU-Ultra/actions/workflows/build-manager.yml/runs?branch=${MANAGER_BRANCH}&status=success&per_page=1" --jq '.workflow_runs[0].id' 2>/dev/null || echo "")
-
+      
           if [ -n "$RUN_ID" ] && [ "$RUN_ID" != "null" ]; then
             echo "✅ Tìm thấy CI Run ID: $RUN_ID"
-
+      
             # 2. Truy vấn API để lấy danh sách Artifacts và tự tìm TÊN THỰC TẾ của Manager APK
             ARTIFACTS_JSON=$(gh api "repos/SukiSU-Ultra/SukiSU-Ultra/actions/runs/${RUN_ID}/artifacts" 2>/dev/null || echo "")
-
+      
             # Tìm Artifact chứa tên Manager/app/apk (loại trừ ksud, lkm, mappings, susfs)
             ARTIFACT_NAME=$(echo "$ARTIFACTS_JSON" | jq -r '
               .artifacts[]?
@@ -1538,7 +1538,7 @@ jobs:
               | select(.name | test("Manager|manager|app|apk"; "i"))
               | .name
             ' | head -n 1)
-
+      
             # Fallback nếu không khớp filter trên nhưng vẫn có Artifact chưa hết hạn
             if [ -z "$ARTIFACT_NAME" ] || [ "$ARTIFACT_NAME" == "null" ]; then
               ARTIFACT_NAME=$(echo "$ARTIFACTS_JSON" | jq -r '
@@ -1548,7 +1548,7 @@ jobs:
                 | .name
               ' | head -n 1)
             fi
-
+      
             if [ -n "$ARTIFACT_NAME" ] && [ "$ARTIFACT_NAME" != "null" ]; then
               echo "🎯 Tải chính xác Artifact: '$ARTIFACT_NAME'..."
               gh run download "$RUN_ID" --repo "SukiSU-Ultra/SukiSU-Ultra" --name "$ARTIFACT_NAME" --dir ./AnyKernel3/ || true
@@ -1561,22 +1561,34 @@ jobs:
             gh release download --repo "SukiSU-Ultra/SukiSU-Ultra" --pattern "*Manager*.apk" --dir ./AnyKernel3/ || \
             gh release download --repo "SukiSU-Ultra/SukiSU-Ultra" --pattern "*.apk" --dir ./AnyKernel3/ || true
           fi
-
-          # 3. Giải nén và chuyển file APK về thẳng gốc thư mục AnyKernel3
+      
+          # 3. Giải nén, chuyển file APK về AnyKernel3 và bảo vệ thư mục gốc
           cd ./AnyKernel3/
-          
+      
           # Giải nén các file zip nếu có
           find . -maxdepth 2 -name "*.zip" -type f -exec unzip -o {} -d . \; -exec rm -f {} +
-
-          # Di chuyển file .apk nằm trong folder con ra ngoài AnyKernel3
-          find . -mindepth 2 -name "*.apk" -type f -exec mv {} . \;
-
-          # Dọn dẹp các folder rỗng dư thừa
-          find . -mindepth 1 -maxdepth 1 -type d -exec rm -rf {} + 2>/dev/null || true
-
+      
+          # Di chuyển file .apk nằm trong folder con ra ngoài gốc AnyKernel3
+          find . -mindepth 2 -name "*.apk" -type f -exec mv -f {} . \;
+      
+          # Chỉ xóa folder tạm phát sinh, BẢO TỒN các thư mục gốc của AnyKernel3
+          for dir in */; do
+            [ -d "$dir" ] || continue
+            dirname=$(basename "$dir")
+            case "$dirname" in
+              META-INF|tools|patch|patching|ramdisk|modules|.git)
+                # Thư mục AnyKernel3 mặc định -> Giữ nguyên
+                ;;
+              *)
+                echo "🧹 Xóa thư mục tạm giải nén: $dirname"
+                rm -rf "$dir"
+                ;;
+            esac
+          done
+      
           echo "📋 File APK chính xác thu được trong AnyKernel3:"
           ls -la *.apk || echo "⚠️ Không tìm thấy file APK nào!"
-
+          
       - name: Set zip Suffix
         id: suffix
         run: |
