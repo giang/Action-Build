@@ -668,39 +668,34 @@ jobs:
           echo "KSU_MANAGER_BRANCH=$KSU_MANAGER_BRANCH" >> $GITHUB_ENV
           echo "KSU_BUILTIN_BRANCH=$KSU_BUILTIN_BRANCH" >> $GITHUB_ENV
 
-          # 1. Pull setup.sh và chạy
+          # 1. Tích hợp KernelSU bằng setup.sh
           curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/${KSU_MANAGER_BRANCH}/kernel/setup.sh" | bash -s "$KSU_BUILTIN_BRANCH"
           cd ./KernelSU
 
-          # 2. Fetch toàn bộ lịch sử commit của nhánh Manager (main)
-          git fetch origin "$KSU_MANAGER_BRANCH" --unshallow 2>/dev/null || git fetch origin "$KSU_MANAGER_BRANCH" --depth=10000 2>/dev/null || true
+          # 2. Fetch đầy đủ lịch sử commit từ origin
+          git fetch origin --unshallow 2>/dev/null || git fetch origin --depth=10000 2>/dev/null || true
 
-          # 3. Tìm commit SHA chính xác của bản Manager APK vừa build thành công gần nhất
-          MANAGER_RUN_JSON=$(gh api "repos/SukiSU-Ultra/SukiSU-Ultra/actions/workflows/build-manager.yml/runs?branch=$KSU_MANAGER_BRANCH&status=success&event=push&per_page=1" 2>/dev/null || echo "")
+          # 3. Lấy commit SHA mới nhất từ Manager CI dựa trên nhánh KSU_MANAGER_BRANCH trong biến của bạn
+          MANAGER_RUN_JSON=$(gh api "repos/SukiSU-Ultra/SukiSU-Ultra/actions/workflows/build-manager.yml/runs?branch=${KSU_MANAGER_BRANCH}&status=success&per_page=1" 2>/dev/null || echo "")
           MANAGER_SHA=$(echo "$MANAGER_RUN_JSON" | jq -r '.workflow_runs[0].head_sha // empty')
 
-          if [[ -n "$MANAGER_SHA" ]]; then
-            echo "✅ Tìm thấy Manager CI Commit SHA: $MANAGER_SHA"
-            git fetch origin "$MANAGER_SHA" 2>/dev/null || true
-            KSU_COMMIT_COUNT=$(git rev-list --count "$MANAGER_SHA" 2>/dev/null || echo "")
+          # 4. Ép KernelSU checkout đúng commit của Manager
+          if [[ -n "$MANUAL_HASH" ]]; then
+            TARGET_SHA="$MANUAL_HASH"
+          elif [[ -n "$MANAGER_SHA" ]]; then
+            TARGET_SHA="$MANAGER_SHA"
+            echo "🎯 Đồng bộ KernelSU theo Manager CI Commit SHA: $MANAGER_SHA (Branch: $KSU_MANAGER_BRANCH)"
+          else
+            TARGET_SHA="origin/$KSU_MANAGER_BRANCH"
           fi
 
-          if [[ -z "$KSU_COMMIT_COUNT" ]]; then
-            echo "⚠️ Không lấy được SHA của Manager, tự động đếm trên origin/$KSU_MANAGER_BRANCH"
-            KSU_COMMIT_COUNT=$(git rev-list --count "origin/$KSU_MANAGER_BRANCH" 2>/dev/null || git rev-list --count HEAD 2>/dev/null || echo 13000)
-          fi
+          git checkout "$TARGET_SHA" || git checkout "origin/$KSU_MANAGER_BRANCH"
 
-          # Tính toán KSU_VERSION chuẩn trùng khớp với Manager APK
+          # 5. Tính toán KSU_VERSION chuẩn xác (đếm commit từ HEAD đã checkout)
+          KSU_COMMIT_COUNT=$(git rev-list --count HEAD 2>/dev/null || echo 13000)
           KSU_VERSION=$(expr $KSU_COMMIT_COUNT + 37185)
           echo "KSUVER=$KSU_VERSION" >> $GITHUB_ENV
-          echo "✅ KSU_VERSION tính toán chính xác: $KSU_VERSION (từ $KSU_COMMIT_COUNT commits)"
-
-          # 4. Xử lý manual hash nếu người dùng chỉ định
-          if [[ -n "$MANUAL_HASH" ]]; then
-            git fetch origin "$KSU_BUILTIN_BRANCH" --depth=50 2>/dev/null || true
-            git checkout "$MANUAL_HASH"
-            SHORT_HASH=${MANUAL_HASH:0:8}
-          fi
+          echo "✅ KSU_VERSION tính toán chính xác: $KSU_VERSION (Commits: $KSU_COMMIT_COUNT)"
 
           KSU_VERSION_TAG=$(curl -fsSL https://api.github.com/repos/SukiSU-Ultra/SukiSU-Ultra/releases/latest \
             | grep '"tag_name":' | sed -E 's/.*"v?([^"]+)".*/\1/')
@@ -710,22 +705,16 @@ jobs:
           echo "KSU_VERSION_TAG=$KSU_VERSION_TAG" >> $GITHUB_ENV
 
           GIT_HASH=$(git rev-parse --short HEAD)
-
-          if [[ -n "$MANUAL_HASH" ]]; then
-            USE_HASH="$SHORT_HASH"
-          else
-            USE_HASH="$GIT_HASH"
-          fi
           if [[ -z "$KSU_CUSTOM_TAG" ]]; then
-            VERSION_FULL="v$KSU_VERSION_TAG-$USE_HASH@$KSU_BUILTIN_BRANCH"
+            VERSION_FULL="v$KSU_VERSION_TAG-$GIT_HASH@$KSU_MANAGER_BRANCH"
           else
-            VERSION_FULL="v$KSU_VERSION_TAG-$KSU_CUSTOM_TAG@$KSU_BUILTIN_BRANCH[$USE_HASH]"
+            VERSION_FULL="v$KSU_VERSION_TAG-$KSU_CUSTOM_TAG@$KSU_MANAGER_BRANCH[$GIT_HASH]"
           fi
 
           ESC_VERSION_FULL=$(printf '%s' "$VERSION_FULL" | sed 's/[&|\\/]/\\&/g')
           ESC_KSU_VERSION_TAG=$(printf '%s' "$KSU_VERSION_TAG" | sed 's/[&|\\/]/\\&/g')
 
-          # 5. Ghi đè vào Makefile
+          # 6. Ghi đè KSU_VERSION vào kernel/Makefile
           if grep -q '^KSU_VERSION_FULL := ' kernel/Makefile; then
             sed -i "s|^KSU_VERSION_FULL := .*|KSU_VERSION_FULL := $ESC_VERSION_FULL|" kernel/Makefile
           fi
@@ -740,7 +729,7 @@ jobs:
             echo "KSU_VERSION := $KSU_VERSION" >> kernel/Makefile
           fi
 
-          echo "::group::Kiểm tra thông tin phiên bản trong Makefile"
+          echo "::group::Thông tin Makefile sau khi cấu hình"
           grep -nE '^(REPO_OWNER|REPO_NAME|REPO_BRANCH|KSU_VERSION|KSU_VERSION_API|KSU_VERSION_FULL|VERSION_TAG)' kernel/Makefile
           echo "::endgroup::"
           
@@ -1525,26 +1514,38 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          MANAGER_ARTIFACT=Manager
+          mkdir -p ./AnyKernel3/
 
-          echo "Using branch: $KSU_MANAGER_BRANCH"
-          echo "Downloading artifact: $MANAGER_ARTIFACT"
+          # Tận dụng biến KSU_MANAGER_BRANCH đã parse từ step Add SukiSU Ultra
+          MANAGER_BRANCH="${{ env.KSU_MANAGER_BRANCH }}"
+          [ -z "$MANAGER_BRANCH" ] && MANAGER_BRANCH="main"
 
-          run_id=$(gh api "repos/SukiSU-Ultra/SukiSU-Ultra/actions/workflows/build-manager.yml/runs?branch=$KSU_MANAGER_BRANCH&status=success&event=push&per_page=1" --jq '.workflow_runs[0].id' || echo "")
+          echo "🔍 Tìm kiếm Manager APK mới nhất từ CI trên nhánh: $MANAGER_BRANCH..."
 
-          if [[ -z "$run_id" ]]; then
-            echo "No successful workflow run found on branch $KSU_MANAGER_BRANCH. Skipping download."
-            exit 0
+          # 1. Truy vấn Run ID mới nhất từ workflow build-manager.yml trên đúng nhánh MANAGER_BRANCH
+          RUN_ID=$(gh api "repos/SukiSU-Ultra/SukiSU-Ultra/actions/workflows/build-manager.yml/runs?branch=${MANAGER_BRANCH}&status=success&per_page=1" --jq '.workflow_runs[0].id' 2>/dev/null || echo "")
+
+          # 2. Nếu tìm thấy CI Artifact thì tải về, nếu không sẽ tự động fallback sang Release
+          if [ -n "$RUN_ID" ] && [ "$RUN_ID" != "null" ]; then
+            echo "✅ Tìm thấy CI Run ID: $RUN_ID (Build Manager CI mới nhất)"
+            gh run download "$RUN_ID" --repo "SukiSU-Ultra/SukiSU-Ultra" --dir ./AnyKernel3/ || true
+          else
+            echo "⚠️ Không tìm thấy CI Artifact phù hợp trên nhánh $MANAGER_BRANCH, tiến hành tải từ Release..."
+            gh release download --repo "SukiSU-Ultra/SukiSU-Ultra" --pattern "*.apk" --dir ./AnyKernel3/ || true
           fi
-          artifact_url=$(gh api "repos/SukiSU-Ultra/SukiSU-Ultra/actions/runs/$run_id/artifacts" | jq -r ".artifacts[] | select(.name == \"$MANAGER_ARTIFACT\") | .archive_download_url" | head -n1)
 
-          if [[ -z "$artifact_url" ]]; then
-            echo "No artifact '$MANAGER_ARTIFACT' found in run $run_id. Skipping download."
-            exit 0
-          fi
-          echo "Downloading from: $artifact_url"
-          curl -fL -H "Authorization: token $GITHUB_TOKEN" -o "${MANAGER_ARTIFACT}.zip" "$artifact_url"
-          unzip -j "${MANAGER_ARTIFACT}.zip" "*.apk" -d ./AnyKernel3/
+          # 3. Xử lý giải nén nếu Artifact tải về ở dạng file zip
+          cd ./AnyKernel3/
+          for zip in *.zip; do
+            if [ -f "$zip" ]; then
+              echo "📦 Giải nén Artifact: $zip"
+              unzip -o "$zip"
+              rm -f "$zip"
+            fi
+          done
+
+          echo "📋 Các file APK đã sẵn sàng trong thư mục AnyKernel3:"
+          ls -la *.apk || echo "⚠️ Không tìm thấy file APK nào!"
 
       - name: Set zip Suffix
         id: suffix
