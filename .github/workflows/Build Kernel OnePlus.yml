@@ -1521,42 +1521,61 @@ jobs:
 
           echo "🔍 Tìm kiếm CI Manager Run ID trên nhánh: $MANAGER_BRANCH..."
 
-          # Lấy Run ID thành công mới nhất
+          # 1. Lấy Run ID của lượt build CI thành công mới nhất dựa trên biến MANAGER_BRANCH
           RUN_ID=$(gh api "repos/SukiSU-Ultra/SukiSU-Ultra/actions/workflows/build-manager.yml/runs?branch=${MANAGER_BRANCH}&status=success&per_page=1" --jq '.workflow_runs[0].id' 2>/dev/null || echo "")
 
           if [ -n "$RUN_ID" ] && [ "$RUN_ID" != "null" ]; then
             echo "✅ Tìm thấy CI Run ID: $RUN_ID"
-            
-            # Chỉ tải DUY NHẤT Artifact tên "Manager" (Manager.zip)
-            gh run download "$RUN_ID" --repo "SukiSU-Ultra/SukiSU-Ultra" --name "Manager" --dir ./AnyKernel3/ || \
-            gh run download "$RUN_ID" --repo "SukiSU-Ultra/SukiSU-Ultra" --pattern "*Manager*" --dir ./AnyKernel3/ || true
+
+            # 2. Truy vấn API để lấy danh sách Artifacts và tự tìm TÊN THỰC TẾ của Manager APK
+            ARTIFACTS_JSON=$(gh api "repos/SukiSU-Ultra/SukiSU-Ultra/actions/runs/${RUN_ID}/artifacts" 2>/dev/null || echo "")
+
+            # Tìm Artifact chứa tên Manager/app/apk (loại trừ ksud, lkm, mappings, susfs)
+            ARTIFACT_NAME=$(echo "$ARTIFACTS_JSON" | jq -r '
+              .artifacts[]?
+              | select(.expired == false)
+              | select(.name | test("ksud|lkm|susfs|mappings|kpmmgr"; "i") | not)
+              | select(.name | test("Manager|manager|app|apk"; "i"))
+              | .name
+            ' | head -n 1)
+
+            # Fallback nếu không khớp filter trên nhưng vẫn có Artifact chưa hết hạn
+            if [ -z "$ARTIFACT_NAME" ] || [ "$ARTIFACT_NAME" == "null" ]; then
+              ARTIFACT_NAME=$(echo "$ARTIFACTS_JSON" | jq -r '
+                .artifacts[]?
+                | select(.expired == false)
+                | select(.name | test("ksud|lkm|susfs|mappings|kpmmgr"; "i") | not)
+                | .name
+              ' | head -n 1)
+            fi
+
+            if [ -n "$ARTIFACT_NAME" ] && [ "$ARTIFACT_NAME" != "null" ]; then
+              echo "🎯 Tải chính xác Artifact: '$ARTIFACT_NAME'..."
+              gh run download "$RUN_ID" --repo "SukiSU-Ultra/SukiSU-Ultra" --name "$ARTIFACT_NAME" --dir ./AnyKernel3/ || true
+            else
+              echo "⚠️ Không tìm thấy tên Artifact cụ thể, tiến hành tải về thư mục AnyKernel3..."
+              gh run download "$RUN_ID" --repo "SukiSU-Ultra/SukiSU-Ultra" --dir ./AnyKernel3/ || true
+            fi
           else
-            echo "⚠️ Không tìm thấy CI Artifact, fallback tải Manager APK từ Release..."
-            gh release download --repo "SukiSU-Ultra/SukiSU-Ultra" --pattern "*Manager*.apk" --dir ./AnyKernel3/ || true
+            echo "⚠️ Không tìm thấy CI Run ID trên nhánh $MANAGER_BRANCH, fallback tải từ Release..."
+            gh release download --repo "SukiSU-Ultra/SukiSU-Ultra" --pattern "*Manager*.apk" --dir ./AnyKernel3/ || \
+            gh release download --repo "SukiSU-Ultra/SukiSU-Ultra" --pattern "*.apk" --dir ./AnyKernel3/ || true
           fi
 
-          # Giải nén duy nhất file Manager.zip vào AnyKernel3
+          # 3. Giải nén và chuyển file APK về thẳng gốc thư mục AnyKernel3
           cd ./AnyKernel3/
-          if [ -f "Manager.zip" ]; then
-            echo "📦 Giải nén Manager.zip vào AnyKernel3..."
-            unzip -o "Manager.zip"
-            rm -f "Manager.zip"
-          elif [ -f "Manager/Manager.zip" ]; then
-            mv Manager/Manager.zip ./
-            unzip -o "Manager.zip"
-            rm -rf "Manager" "Manager.zip"
-          else
-            for zip in *Manager*.zip; do
-              if [ -f "$zip" ]; then
-                echo "📦 Giải nén $zip..."
-                unzip -o "$zip"
-                rm -f "$zip"
-              fi
-            done
-          fi
+          
+          # Giải nén các file zip nếu có
+          find . -maxdepth 2 -name "*.zip" -type f -exec unzip -o {} -d . \; -exec rm -f {} +
+
+          # Di chuyển file .apk nằm trong folder con ra ngoài AnyKernel3
+          find . -mindepth 2 -name "*.apk" -type f -exec mv {} . \;
+
+          # Dọn dẹp các folder rỗng dư thừa
+          find . -mindepth 1 -maxdepth 1 -type d -exec rm -rf {} + 2>/dev/null || true
 
           echo "📋 File APK chính xác thu được trong AnyKernel3:"
-          ls -la *.apk || echo "⚠️ Không tìm thấy file APK!"
+          ls -la *.apk || echo "⚠️ Không tìm thấy file APK nào!"
 
       - name: Set zip Suffix
         id: suffix
