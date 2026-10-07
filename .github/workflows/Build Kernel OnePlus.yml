@@ -1534,7 +1534,7 @@ jobs:
             ARTIFACT_NAME=$(echo "$ARTIFACTS_JSON" | jq -r '
               .artifacts[]?
               | select(.expired == false)
-              | select(.name | test("ksud|lkm|susfs|mappings|kpmmgr"; "i") | not)
+              | select(.name | test("ksud|lkm|susfs|mappings|kpmmgr|gradle|spoofed"; "i") | not)
               | select(.name | test("Manager|manager|app|apk"; "i"))
               | .name
             ' | head -n 1)
@@ -1544,7 +1544,7 @@ jobs:
               ARTIFACT_NAME=$(echo "$ARTIFACTS_JSON" | jq -r '
                 .artifacts[]?
                 | select(.expired == false)
-                | select(.name | test("ksud|lkm|susfs|mappings|kpmmgr"; "i") | not)
+                | select(.name | test("ksud|lkm|susfs|mappings|kpmmgr|gradle|spoofed"; "i") | not)
                 | .name
               ' | head -n 1)
             fi
