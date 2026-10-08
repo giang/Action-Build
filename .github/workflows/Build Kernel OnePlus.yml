@@ -205,8 +205,8 @@ jobs:
 
       - name: Configure Git
         run: |
-          git config --global user.name "Numbersf"
-          git config --global user.email "263623064@qq.com"
+          git config --global user.name "giang"
+          git config --global user.email "giang@techs.review"
           mkdir kernel_workspace && cd kernel_workspace
           git clone https://github.com/Numbersf/Action-Build.git -b BakaSU
 
