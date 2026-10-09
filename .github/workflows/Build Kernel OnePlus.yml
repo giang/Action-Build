@@ -808,7 +808,7 @@ jobs:
           SHIM_PATH="$RUNNER_TEMP/susfs-sucompat-shim.sh"
           curl --fail --silent --show-error --location "$SHIM_URL" -o "$SHIM_PATH"
           chmod +x "$SHIM_PATH"
-          bash "$SHIM_PATH"
+          #bash "$SHIM_PATH"
 
       - name: Revert and Postfix Fake Patches
         if: ${{ github.event.inputs.SUSFS_META != '-1' }}
