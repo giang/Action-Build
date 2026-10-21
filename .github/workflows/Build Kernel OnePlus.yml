@@ -674,6 +674,10 @@ jobs:
           [[ -n "$MANUAL_HASH" ]] && echo "手动指定 hash: $MANUAL_HASH" || echo "手动指定 hash: 未启用"
 
           curl -LSs "https://raw.githubusercontent.com/Baka-SU/BakaSU/${KSU_MANAGER_BRANCH}/kernel/setup.sh" | bash -s "$KSU_BUILTIN_BRANCH"
+          # Fix KSU
+          curl -sSL -O https://raw.githubusercontent.com/adennnqt/anykern-DumpC2J/refs/heads/main/scripts/ksu_susfs_fixup.sh
+          chmod +x ksu_susfs_fixup.sh
+          ./ksu_susfs_fixup.sh "$(pwd)/KernelSU/kernel" "BakaSU"
           cd ./KernelSU
 
           if [[ -n "$KSU_CUSTOM_TAG" ]]; then
