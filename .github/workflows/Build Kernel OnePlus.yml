@@ -675,12 +675,13 @@ jobs:
 
           curl -LSs "https://raw.githubusercontent.com/Baka-SU/BakaSU/${KSU_MANAGER_BRANCH}/kernel/setup.sh" | bash -s "$KSU_BUILTIN_BRANCH"
           # Fix KSU
-          wget -O ./KernelSU/kernel/feature/selinux_hide.c https://raw.githubusercontent.com/Baka-SU/BakaSU/f308ed0936bdd31163cb53da3f42bc7a698f5512/kernel/feature/selinux_hide.c
-          wget -O ./KernelSU/kernel/tools/susfs_compat.mk https://raw.githubusercontent.com/Baka-SU/BakaSU/f308ed0936bdd31163cb53da3f42bc7a698f5512/kernel/tools/susfs_compat.mk
+          #wget -O ./KernelSU/kernel/feature/selinux_hide.c https://raw.githubusercontent.com/Baka-SU/BakaSU/f308ed0936bdd31163cb53da3f42bc7a698f5512/kernel/feature/selinux_hide.c
+          #wget -O ./KernelSU/kernel/tools/susfs_compat.mk https://raw.githubusercontent.com/Baka-SU/BakaSU/f308ed0936bdd31163cb53da3f42bc7a698f5512/kernel/tools/susfs_compat.mk
           
           curl -sSL -O https://raw.githubusercontent.com/adennnqt/anykern-DumpC2J/refs/heads/main/scripts/ksu_susfs_fixup.sh
           chmod +x ksu_susfs_fixup.sh
-          ./ksu_susfs_fixup.sh "$(pwd)/KernelSU/kernel" "BakaSU"
+          #./ksu_susfs_fixup.sh "$(pwd)/KernelSU/kernel" "BakaSU"
+          
           cd ./KernelSU
 
           if [[ -n "$KSU_CUSTOM_TAG" ]]; then
